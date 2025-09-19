@@ -1,0 +1,5 @@
+{
+  "name": "Copy of Digital Bike Speedometer",
+  "description": "A modern, React-based digital bike speedometer with GPS tracking, a fuel log, and offline-first storage in IndexedDB. It provides real-time speed, trip tracking, and range estimation with a clean, responsive UI.",
+  "requestFramePermissions": []
+}
