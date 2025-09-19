@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useGeolocation } from '../hooks/useGeolocation';
@@ -49,22 +48,47 @@ export const Speedometer: React.FC = () => {
         }
         setStartTime(null);
     };
+    
+    // View for when permission is not yet granted
+    if (permissionState === 'prompt' && !isRiding) {
+        return (
+            <div className="flex flex-col items-center justify-center flex-grow h-full text-center p-4">
+                <div className="bg-light-card dark:bg-dark-card p-8 rounded-2xl shadow-2xl max-w-sm w-full">
+                    <h3 className="font-bold text-xl mb-3 text-light-accent dark:text-dark-accent">Location Permission Required</h3>
+                    <p className="text-base mb-6">
+                        This app needs access to your location to function as a speedometer. Please grant permission when prompted.
+                    </p>
+                    <button
+                        onClick={startRide}
+                        className="w-full py-3 text-lg font-bold text-white bg-green-500 rounded-lg shadow-lg hover:bg-green-600 transition"
+                    >
+                        Grant Permission & Start Ride
+                    </button>
+                    {error && <div className="mt-4 text-red-500 dark:text-red-400 text-sm">{error}</div>}
+                </div>
+            </div>
+        );
+    }
+    
+    // View for when permission has been explicitly denied
+    if (permissionState === 'denied') {
+        return (
+            <div className="flex flex-col items-center justify-center flex-grow h-full text-center p-4">
+                <div className="bg-light-card dark:bg-dark-card p-8 rounded-2xl shadow-2xl max-w-sm w-full">
+                    <h3 className="font-bold text-xl mb-3 text-red-500 dark:text-red-400">Location Access Denied</h3>
+                    <p className="text-base">
+                        You have denied location access. To use the speedometer, please enable location permissions for this site in your browser settings.
+                    </p>
+                </div>
+            </div>
+        );
+    }
 
-    const renderPermissionRequest = () => (
-        <div className="text-center p-4 bg-yellow-100 dark:bg-yellow-900 rounded-lg">
-            <h3 className="font-bold text-lg mb-2">Location Permission Required</h3>
-            <p className="text-sm">This app needs access to your location to function as a speedometer. Please grant permission when prompted.</p>
-            {permissionState === 'denied' && (
-                <p className="mt-2 text-red-500 dark:text-red-400 font-semibold">Permission was denied. You need to enable it in your browser settings.</p>
-            )}
-        </div>
-    );
-
+    // Main speedometer view (permission granted, or ride in progress)
     return (
         <div className="flex flex-col items-center justify-between flex-grow h-full text-center">
-            <div className="w-full">
-                {permissionState !== 'granted' && !isRiding && renderPermissionRequest()}
-                {error && <div className="text-red-500 dark:text-red-400 p-2 bg-red-100 dark:bg-red-900 rounded-md">{error}</div>}
+            <div className="w-full h-12 flex items-center justify-center">
+                {error && <div className="text-red-500 dark:text-red-400 p-2 bg-red-100 dark:bg-red-900 rounded-md w-full max-w-sm">{error}</div>}
             </div>
 
             <div className="relative w-72 h-72 sm:w-80 sm:h-80 flex items-center justify-center">
@@ -102,8 +126,7 @@ export const Speedometer: React.FC = () => {
                 {!isRiding ? (
                     <button
                         onClick={startRide}
-                        disabled={permissionState === 'denied'}
-                        className="w-full py-4 text-2xl font-bold text-white bg-green-500 rounded-lg shadow-lg hover:bg-green-600 transition disabled:bg-gray-400 disabled:cursor-not-allowed"
+                        className="w-full py-4 text-2xl font-bold text-white bg-green-500 rounded-lg shadow-lg hover:bg-green-600 transition"
                     >
                         START RIDE
                     </button>
